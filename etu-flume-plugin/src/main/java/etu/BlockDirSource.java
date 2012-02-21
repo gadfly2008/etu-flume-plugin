@@ -163,8 +163,6 @@ public class BlockDirSource extends EventSource.Base {
 					LOG.info("removed dir " + f);
 					LOG.info("stopping watcher for dir: " + f);
 					watcher.stop();
-					// calling check explicitly to notify about deleted subdirs,
-					// so that subdirs watchers can be stopped
 					watcher.check();
 					return;
 				}

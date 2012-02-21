@@ -1,0 +1,22 @@
+
+1) Package 
+   $ mvn package
+
+2) Copy etu-flume-plugin.jar into the flume/lib/
+
+3) Add the plugin classes in flume/conf/flume-site.xml
+<configuration>
+  <property>
+    <name>flume.plugin.classes</name>
+    <value>etu.BlockDirSource,etu.BlockDfsSink</value>
+    <description>Comma separated list of plugin classes</description>
+  </property>
+</configuration>
+
+4) 
+	"usage: BlockDirSource(\"dirname\"[, bufferSize=4*1024*1024])"
+	"usage: BlockDirSink(\"[(hdfs|file|s3n|...)://namenode[:port]]/path\"[, file [,outputformat ]])"
+
+	Such as :   BlockDirSource("/var/disk/a/data/")
+				BlockDfsSink("hdfs://etu-master:9000/flume/test/%{relativePath}","%{filename}","raw")
+

@@ -1,20 +1,3 @@
-/**
- * Licensed to Cloudera, Inc. under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  Cloudera, Inc. licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package etu;
 
 import java.io.IOException;
@@ -42,18 +25,6 @@ import com.cloudera.flume.handlers.text.output.RawOutputFormat;
 import com.cloudera.util.Pair;
 import com.google.common.base.Preconditions;
 
-/**
- * Writes events the a file give a hadoop uri path. If no uri is specified It
- * defaults to the set by the given configured by fs.default.name config
- * variable. The user can specify an output format for the file. If none is
- * specified the default set by flume.collector.outputformat in the
- * flumeconfiguration file is used.
- * 
- * TODO (jon) eventually, the CustomDfsSink should be replaced with just a
- * EventSink.
- * 
- * TODO (jon) this is gross, please deprecate me.
- */
 public class BlockDfsSink extends EventSink.Base {
 	static final Logger LOG = LoggerFactory.getLogger(BlockDfsSink.class);
 	final String path;
@@ -61,15 +32,8 @@ public class BlockDfsSink extends EventSink.Base {
 
 	private final String END = "YES";
 	CustomDfsSink writer = null;
-
-	// We keep a - potentially unbounded - set of writers around to deal with
-	// different tags on events. Therefore this feature should be used with some
-	// care (where the set of possible paths is small) until we do something
-	// more sensible with resource management.
 	final Map<String, CustomDfsSink> sfWriters = new HashMap<String, CustomDfsSink>();
 
-	// Used to short-circuit around doing regex matches when we know there are
-	// no templates to be replaced.
 	boolean shouldSub = false;
 	private String filename = "";
 	protected String absolutePath = "";
@@ -147,7 +111,7 @@ public class BlockDfsSink extends EventSink.Base {
 		} else {
 			LOG.info("Closing " + absolutePath);
 			if (writer == null) {
-				LOG.warn("EscapedCustomDfsSink's Writer for '" + absolutePath
+				LOG.warn("BlockDirSink Writer for '" + absolutePath
 						+ "' was already closed!");
 				return;
 			}
@@ -170,7 +134,7 @@ public class BlockDfsSink extends EventSink.Base {
 			public EventSink create(Context context, Object... args) {
 				Preconditions.checkArgument(args.length >= 1
 						&& args.length <= 3,
-						"usage: escapedCustomDfs(\"[(hdfs|file|s3n|...)://namenode[:port]]/path\""
+						"usage: BlockDirSink(\"[(hdfs|file|s3n|...)://namenode[:port]]/path\""
 								+ "[, file [,outputformat ]])");
 
 				String filename = "";
@@ -202,7 +166,7 @@ public class BlockDfsSink extends EventSink.Base {
 			public EventSink build(Context context, String... args) {
 				// updated interface calls build(Context,Object...) instead
 				throw new RuntimeException(
-						"Old sink builder for EscapedCustomDfsSink should not be exercised");
+						"Old sink builder for BlockDirSink should not be exercised");
 			}
 
 		};
